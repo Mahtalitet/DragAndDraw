@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -13,9 +15,11 @@ import java.util.ArrayList;
 
 public class BoxDrawingView extends View {
     private static final String TAG = BoxDrawingView.class.toString();
+    private static final String KEY_BOXES = "com.learning.draganddraw.boxes";
+    private static final String KEY_SUPER_PARCEL = "com.learning.draganddraw.superParcel";
 
     private Box mCurrentBox;
-    private ArrayList<Box> mBoxes = new ArrayList<Box>();
+    private ArrayList<Box> mBoxes;
     private Paint mBoxPaint;
     private Paint mBackgroundPaint;
 
@@ -31,6 +35,10 @@ public class BoxDrawingView extends View {
 
         mBackgroundPaint = new Paint();
         mBackgroundPaint.setColor(0xfff8efe0);
+
+        if (mBoxes == null) {
+            mBoxes = new ArrayList<>();
+        }
     }
 
     @Override
@@ -83,5 +91,28 @@ public class BoxDrawingView extends View {
             canvas.drawRect(left, top, right, bottom, mBoxPaint);
         }
 
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(KEY_SUPER_PARCEL, super.onSaveInstanceState());
+        bundle.putParcelableArrayList(KEY_BOXES, mBoxes);
+        Log.d(TAG, "Initial size is: "+mBoxes.size());
+        return bundle;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+
+        if (state instanceof Bundle) {
+            Bundle bundle = (Bundle) state;
+            mBoxes = bundle.getParcelableArrayList(KEY_BOXES);
+            Log.d(TAG, "Restored size is: "+mBoxes.size());
+            invalidate();
+            state = bundle.getParcelable(KEY_SUPER_PARCEL);
+        }
+
+        super.onRestoreInstanceState(state);
     }
 }
