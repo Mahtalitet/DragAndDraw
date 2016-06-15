@@ -64,7 +64,7 @@ public class Box implements Parcelable{
 
     public void rotate(float angle) {
         if (mStyle != null) {
-            mStyle.preRotate(angle, mOrigin.x, mOrigin.y);
+            mStyle.preRotate(angle, mCurrent.x, mCurrent.y);
         }
     }
 
